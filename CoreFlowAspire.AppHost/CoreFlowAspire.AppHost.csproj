@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>ed56cbdc-3763-48a3-b052-db163112aa13</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CoreFlowAspire.ApiService\CoreFlowAspire.ApiService.csproj" />
+    <ProjectReference Include="..\CoreFlowAspire.Web\CoreFlowAspire.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting" Version="8.2.2" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.2" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="8.2.2" />
+  </ItemGroup>
+
+</Project>
