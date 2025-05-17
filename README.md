@@ -23,6 +23,7 @@ CoreFlowAspireSample เป็นโปรเจกต์ตัวอย่า�
 
     ```bash
     dotnet run --project CoreFlowAspire.AppHost
+    
     ```
 
 3. หรือถ้าต้องการรันเฉพาะ Web API

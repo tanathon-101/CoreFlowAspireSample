@@ -7,7 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CoreFlowAspire.ServiceDefaults\CoreFlowAspire.ServiceDefaults.csproj" />
+    <ProjectReference
+      Include="..\CoreFlowAspire.ServiceDefaults\CoreFlowAspire.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="13.4.1" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
   </ItemGroup>
 
 </Project>
