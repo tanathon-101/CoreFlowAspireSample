@@ -5,8 +5,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddProblemDetails();
+
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+// ✅ Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()  // หรือระบุเฉพาะ origin ที่ใช้เช่น http://localhost:7033
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddTransient<SqlConnection>(sp =>
 {
@@ -16,24 +28,23 @@ builder.Services.AddTransient<SqlConnection>(sp =>
     return new SqlConnection(connStr);
 });
 
-
-
-
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
     .AddMutationType<Mutation>()
-    .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = true); // ✅ ใส่ตรงนี้
-
+    .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = true);
 
 var app = builder.Build();
 
-app.UseExceptionHandler();
-app.UseRouting(); // ✅ ต้องมี ไม่งั้น GraphQL จะไม่ตอบ
+// ✅ Apply CORS
+app.UseCors();
 
-app.UseEndpoints(endpoints => // ✅ สำคัญสำหรับ GraphQL v13
+app.UseExceptionHandler();
+app.UseRouting();
+
+app.UseEndpoints(endpoints =>
 {
-    endpoints.MapGraphQL();   // ✅ Map GraphQL
+    endpoints.MapGraphQL();
 });
 
 app.MapDefaultEndpoints();

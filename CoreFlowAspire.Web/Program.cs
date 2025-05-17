@@ -1,21 +1,14 @@
-using Dapper;
-using Microsoft.Data.SqlClient;
-
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("coreflowdb");
-builder.Services.AddScoped(_ => new SqlConnection(connectionString));
+builder.Services.AddRazorPages(); 
+builder.Services.AddHttpClient(); 
 
 var app = builder.Build();
 
-app.MapPost("/publish", async (SqlConnection db, RequestData data) =>
-{
-    var sql = "INSERT INTO SampleData (Name, CreatedAt) VALUES (@Name, GETDATE())";
-    await db.ExecuteAsync(sql, new { data.Name });
-
-    return Results.Ok("Insert success");
-});
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization(); // ต้องมี
+app.MapRazorPages();   
 
 app.Run();
 
-record RequestData(string Name);

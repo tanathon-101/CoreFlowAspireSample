@@ -21,7 +21,7 @@ public class Mutation
     /// </summary>
     /// <param name="name">ชื่อที่ต้องการบันทึก</param>
     /// <returns>ข้อความบอกผลลัพธ์</returns>
-    public async Task<string> InsertSampleDataAsync(string name)
+    public async Task<string> AddSampleData(string name)
     {
         var sql = "INSERT INTO SampleData (Name, CreatedAt) VALUES (@Name, GETDATE())";
 
