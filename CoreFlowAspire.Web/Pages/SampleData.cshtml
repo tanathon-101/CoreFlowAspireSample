@@ -11,27 +11,30 @@
         <h2 class="mb-0">Sample Data</h2>
     </div>
 
-<form method="post" asp-antiforgery="true" class="row g-3 mb-4">
-    <div class="col-md-6">
-        <input asp-for="Name" class="form-control form-control-lg" placeholder="Enter name..." />
-    </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-success btn-lg">
-            <i class="bi bi-plus-circle-fill me-1"></i> Add
-        </button>
+<form method="post" class="mb-4">
+    @Html.AntiForgeryToken()
+    <div class="row g-2 align-items-end">
+        <div class="col-auto">
+            <label for="Name" class="form-label mb-0">Name</label>
+            <input type="text" name="Name" id="Name" value="@Model.Name" class="form-control" placeholder="Enter name" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
     </div>
 </form>
-   
 
-    @if (Model.Items != null && Model.Items.Any())
-    {
+
+
+@if (Model.Items?.Any() == true)
+{
         <div class="table-responsive shadow-sm">
             <table class="table table-hover table-bordered align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Created At</th>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Created At</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,11 +49,5 @@
                 </tbody>
             </table>
         </div>
-    }
-    else
-    {
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> No sample data found.
-        </div>
-    }
-</div>
+}
+    

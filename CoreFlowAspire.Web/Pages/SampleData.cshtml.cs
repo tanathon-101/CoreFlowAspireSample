@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CoreFlowAspire.Web.Pages
 {
-    public class SampleDataModel : PageModel
+    public partial class SampleDataModel : PageModel
     {
-        public List<SampleData> Items { get; set; } = new();
 
-        [BindProperty]
+        [BindProperty(SupportsGet = false)]
         public string Name { get; set; } = string.Empty;
+        public List<SampleData> Items { get; set; } = new();
 
         private readonly GraphQLHttpClient _client;
 
@@ -35,69 +35,40 @@ namespace CoreFlowAspire.Web.Pages
                 }"
             };
 
-            try
-            {
-                var response = await _client.SendQueryAsync<SampleDataQueryResponse>(query);
-                Items = response.Data.SampleData;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("❌ Query Error: " + ex.Message);
-                ModelState.AddModelError("", "Failed to load sample data.");
-            }
+            var response = await _client.SendQueryAsync<SampleDataQueryResponse>(query);
+            Items = response.Data.SampleData;
         }
+
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAsync()
         {
-            Console.WriteLine("➡️ Name input: " + Name);
-
             if (string.IsNullOrWhiteSpace(Name))
             {
-                ModelState.AddModelError("", "Name is required.");
-                await OnGetAsync(); // reload existing data
-                return Page();
+                ModelState.AddModelError(string.Empty, "Name is required.");
+                // โหลดข้อมูลใหม่
+                await OnGetAsync();
+                return Page(); // ใช้ Page() แทน RedirectToPage() เพื่อรักษา ModelState
             }
-
             var mutation = new GraphQLRequest
             {
                 Query = @"
-                mutation($name: String!) {
-                    addSampleData(name: $name)
-                }",
+            mutation($name: String!) {
+                addSampleData(name: $name)
+            }",
                 Variables = new { name = Name }
             };
 
-            try
-            {
-                var response = await _client.SendMutationAsync<AddSampleDataResponse>(mutation);
-                Console.WriteLine("✅ Mutation Success");
-            }
+            var response = await _client.SendMutationAsync<GraphQLResponse<dynamic>>(mutation);
 
-            catch (GraphQLHttpRequestException gqlEx)
+            if (response.Errors != null)
             {
-                Console.WriteLine($"❌ GraphQL Error: {gqlEx.Message}");
-
-                if (gqlEx.Content != null)
+                foreach (var err in response.Errors)
                 {
-                    using (var reader = new System.IO.StreamReader(gqlEx.Content))
-                    {
-                        var content = await reader.ReadToEndAsync();
-                        Console.WriteLine($"📄 Response Content: {content}");
-                    }
+                    Console.WriteLine("❌ GraphQL Error: " + err.Message);
                 }
-
-                ModelState.AddModelError(string.Empty, "Failed to add data. See console for details.");
             }
-            return RedirectToPage(); // reload page after success
-        }
 
-        public class SampleDataQueryResponse
-        {
-            public List<SampleData> SampleData { get; set; } = new();
-        }
-        public class AddSampleDataResponse
-        {
-            public string AddSampleData { get; set; } = string.Empty;
+            return RedirectToPage();
         }
     }
 }
