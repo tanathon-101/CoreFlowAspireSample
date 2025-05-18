@@ -20,13 +20,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddTransient<SqlConnection>(sp =>
-{
-    var config = sp.GetRequiredService<IConfiguration>();
-    var connStr = config.GetConnectionString("coreflowdb");
-    Console.WriteLine("✅ (DI) Connection String: " + connStr);
-    return new SqlConnection(connStr);
-});
 
 builder.Services
     .AddGraphQLServer()
