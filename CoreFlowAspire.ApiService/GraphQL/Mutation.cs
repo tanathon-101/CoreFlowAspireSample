@@ -1,28 +1,27 @@
 using Dapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace CoreFlowAspire.ApiService.GraphQL;
 
-/// <summary>
-/// GraphQL Mutation class — สำหรับเปลี่ยนแปลงข้อมูล เช่น insert, update, delete
-/// </summary>
 public class Mutation
 {
-    private readonly SqlConnection _connection;
+    private readonly IConfiguration _configuration;
 
-    // ใช้ Dependency Injection รับ SqlConnection ที่ผูกไว้ใน Program.cs
-    public Mutation(SqlConnection connection)
+    public Mutation(IConfiguration configuration)
     {
-        _connection = connection;
+        _configuration = configuration;
     }
-
 
     [GraphQLName("addSampleData")]
     public async Task<string> AddSampleData(string name)
     {
+        var connectionString = _configuration.GetConnectionString("coreflowdb");
+
+        await using var connection = new SqlConnection(connectionString);
         var sql = "INSERT INTO SampleData (Name, CreatedAt) VALUES (@Name, GETDATE())";
 
-        var result = await _connection.ExecuteAsync(sql, new { Name = name });
+        var result = await connection.ExecuteAsync(sql, new { Name = name });
 
         return result > 0 ? "Insert successful" : "Insert failed";
     }
